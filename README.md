@@ -22,7 +22,7 @@ It keeps state in a workspace, so repeated runs only process what changed (updat
 ## Supported input
 
 - [pi](https://pi.dev) coding agent session files
-- session format: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/session.md
+- session format: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/sessions.md
 
 ## Install
 
