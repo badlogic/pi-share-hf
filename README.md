@@ -270,6 +270,9 @@ By default it uses:
 - current directory as `--cwd`
 - `.pi/hf-sessions` as `--workspace`
 - preserved embedded images
+- stripped encrypted reasoning signatures (`thinkingSignature`, `thoughtSignature`, `textSignature`)
+
+Signatures are stripped by default because they are client-side encrypted reasoning payloads that cannot be sanitized by secret redaction.
 
 ```bash
 pi-share-hf init --repo user/dataset
@@ -283,6 +286,7 @@ Main options:
 - `--organization <name>` optional namespace when `--repo` is a bare name
 - `--workspace <dir>` workspace dir, default `.pi/hf-sessions`
 - `--no-images` strip embedded images from redacted output
+- `--keep-signatures` keep encrypted reasoning signature fields in redacted output (default: stripped)
 
 ### `collect`
 
