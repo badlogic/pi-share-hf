@@ -32,11 +32,13 @@ export async function runInit(options: InitOptions): Promise<void> {
     cwd: options.cwd,
     repo: options.repo,
     noImages: options.noImages,
+    keepSignatures: options.keepSignatures,
   });
   console.log(`${bold("Initialized workspace:")} ${options.workspace}`);
   console.log(`${bold("CWD:")} ${options.cwd}`);
   console.log(`${bold("Repo:")} ${options.repo}`);
   console.log(`${bold("Images:")} ${options.noImages ? "stripped" : "preserved"}`);
+  console.log(`${bold("Signatures:")} ${options.keepSignatures ? "preserved" : "stripped"}`);
 }
 
 export async function runCollect(options: CollectOptions): Promise<void> {
@@ -52,7 +54,7 @@ export async function runCollect(options: CollectOptions): Promise<void> {
   if (options.session) {
     sessionFiles = sessionFiles.filter((file) => file.includes(options.session!));
   }
-  const redactor = new Redactor(options.envFile, options.secrets, !!config.noImages);
+  const redactor = new Redactor(options.envFile, options.secrets, !!config.noImages, !!config.keepSignatures);
   const secretsHash = computeSecretHash(options.envFile, options.secrets);
   const localManifestPath = workspacePath(options.workspace, LOCAL_MANIFEST_FILE);
   const localManifest = loadLocalManifest(localManifestPath);
@@ -79,7 +81,7 @@ export async function runCollect(options: CollectOptions): Promise<void> {
 
     const inputPath = path.join(sessionDir, file);
     const sourceHash = await sha256File(inputPath);
-    const redactionKey = createRedactionKey(sourceHash, secretsHash, !!config.noImages);
+    const redactionKey = createRedactionKey(sourceHash, secretsHash, !!config.noImages, !!config.keepSignatures);
     const remoteEntry = remoteManifest.get(file);
     const localEntry = localManifest.get(file);
     const redactedPath = workspacePath(options.workspace, "redacted", file);
@@ -224,8 +226,8 @@ export async function runCollect(options: CollectOptions): Promise<void> {
   await runReview(reviewOptions);
 }
 
-function createRedactionKey(sourceHash: string, secretsHash: string, noImages: boolean): string {
-  return `v${REDACTION_VERSION}:${sourceHash}:${secretsHash}:${noImages ? "no-images" : "keep-images"}`;
+function createRedactionKey(sourceHash: string, secretsHash: string, noImages: boolean, keepSignatures: boolean): string {
+  return `v${REDACTION_VERSION}:${sourceHash}:${secretsHash}:${noImages ? "no-images" : "keep-images"}:${keepSignatures ? "keep-signatures" : "strip-signatures"}`;
 }
 
 function findSessionDir(cwd: string): string {

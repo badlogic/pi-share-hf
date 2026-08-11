@@ -181,6 +181,8 @@ async function generateDatasetCard(
     "",
     "Embedded images may be preserved in the uploaded sessions unless the workspace was initialized with `--no-images`.",
     "",
+    "Encrypted reasoning signature fields (`thinkingSignature`, `thoughtSignature`, `textSignature`) are stripped from the uploaded sessions by default. Initialize the workspace with `--keep-signatures` to preserve them.",
+    "",
     "## Limitations",
     "",
     "This dataset is best-effort redacted. Coding agent transcripts can still contain sensitive or off-topic content, especially if a session mixed OSS work with unrelated private tasks. Use with appropriate caution.",

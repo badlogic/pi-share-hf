@@ -4,10 +4,12 @@ import { buildLiteralSecrets, countOccurrences } from "./secrets.ts";
 export class Redactor {
   private readonly literalSecrets: Array<{ name: string; value: string; replacement: string }>;
   private readonly noImages: boolean;
+  private readonly keepSignatures: boolean;
 
-  constructor(envFile: string, secrets: string[], noImages: boolean) {
+  constructor(envFile: string, secrets: string[], noImages: boolean, keepSignatures: boolean) {
     this.literalSecrets = buildLiteralSecrets(envFile, secrets);
     this.noImages = noImages;
+    this.keepSignatures = keepSignatures;
   }
 
   async redactEvent(event: JsonObject): Promise<RedactionResult> {
@@ -23,6 +25,33 @@ export class Redactor {
     if (value === null) return { value, findings: [] };
 
     if (typeof value === "string") {
+      if (parentKey === "thinkingSignature" || parentKey === "thoughtSignature" || parentKey === "textSignature") {
+        if (this.keepSignatures) {
+          return {
+            value,
+            findings: [{
+              detector: "signature",
+              severity: "critical",
+              jsonPath,
+              replacement: "[PRESERVED_SIGNATURE]",
+              count: 1,
+              detail: parentKey,
+              manual_review: true,
+            }],
+          };
+        }
+        return {
+          value: "[SIGNATURE_REMOVED]",
+          findings: [{
+            detector: "signature",
+            severity: "critical",
+            jsonPath,
+            replacement: "[SIGNATURE_REMOVED]",
+            count: 1,
+            detail: parentKey,
+          }],
+        };
+      }
       if (parentKey === "data" && parentObject && typeof parentObject.mimeType === "string" && value.length > 256) {
         if (this.noImages) {
           return {

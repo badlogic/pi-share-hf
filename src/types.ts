@@ -2,7 +2,7 @@ export type JsonValue = null | boolean | number | string | JsonValue[] | { [key:
 export type JsonObject = { [key: string]: JsonValue };
 
 export type Severity = "low" | "medium" | "high" | "critical";
-export type DetectorName = "literal-secret" | "image" | "parse-error";
+export type DetectorName = "literal-secret" | "image" | "parse-error" | "signature";
 export type AboutProject = "yes" | "no" | "mixed";
 export type Shareable = "yes" | "no" | "manual_review";
 export type MissedSensitiveData = "yes" | "no" | "maybe";
@@ -11,6 +11,7 @@ export interface WorkspaceConfig {
   cwd: string;
   repo: string;
   noImages?: boolean;
+  keepSignatures?: boolean;
 }
 
 export interface InitOptions {
@@ -18,6 +19,7 @@ export interface InitOptions {
   repo: string;
   workspace: string;
   noImages: boolean;
+  keepSignatures: boolean;
 }
 
 export interface CollectOptions {

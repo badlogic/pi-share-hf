@@ -31,6 +31,7 @@ Init options:
   --organization <name>  Optional HF organization or user namespace
   --workspace <dir>      Workspace directory (default: .pi/hf-sessions)
   --no-images            Strip embedded images from redacted output
+  --keep-signatures      Keep encrypted reasoning signatures in redacted output (default: stripped)
 
 Collect options:
   --workspace <dir>      Existing workspace (default: .pi/hf-sessions)
@@ -80,6 +81,7 @@ export function parseInitArgs(args: string[]): InitOptions {
   let organization: string | undefined;
   let workspace = path.resolve(".pi/hf-sessions");
   let noImages = false;
+  let keepSignatures = false;
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -88,6 +90,7 @@ export function parseInitArgs(args: string[]): InitOptions {
     else if (arg === "--organization") organization = requireValue(args, ++i, "--organization");
     else if (arg === "--workspace") workspace = path.resolve(requireValue(args, ++i, "--workspace"));
     else if (arg === "--no-images") noImages = true;
+    else if (arg === "--keep-signatures") keepSignatures = true;
     else throw new Error(`Unknown init option: ${arg}`);
   }
 
@@ -100,7 +103,7 @@ export function parseInitArgs(args: string[]): InitOptions {
   }
 
   const repoId = organization ? `${organization}/${repo}` : repo;
-  return { cwd, repo: repoId, workspace, noImages };
+  return { cwd, repo: repoId, workspace, noImages, keepSignatures };
 }
 
 export function parseCollectArgs(args: string[]): CollectOptions {
